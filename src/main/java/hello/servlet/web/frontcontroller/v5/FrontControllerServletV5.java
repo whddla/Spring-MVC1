@@ -36,34 +36,46 @@ public class FrontControllerServletV5 extends HttpServlet {
     }
 
     private void initHandlerMappingMap() {
-        handlerMappingMap.put("/front-controller/v3/members/new-form", new MemberFormControllerV3());
-        handlerMappingMap.put("/front-controller/v3/members/save", new MemberSaveControllerV3());
-        handlerMappingMap.put("/front-controller/v3/members", new MemberListControllerV3());
+        handlerMappingMap.put("/front-controller/v5/v3/members/new-form", new MemberFormControllerV3());
+        handlerMappingMap.put("/front-controller/v5/v3/members/save", new MemberSaveControllerV3());
+        handlerMappingMap.put("/front-controller/v5/v3/members", new MemberListControllerV3());
     }
 
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
         Object handler = getHandler(request);
 
-        ControllerV3 controller = controllerMap.get(requestURI);
-        if (controller == null) {
+        if (handler == null) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
 
-        //paramMap
-        Map<String, String> paramMap = createParamMap(request);
-        ModelView mv = controller.process(paramMap);
+        MyHandlerAdapter adapter = getHandlerAdapter(handler);
+
+        ModelView mv = adapter.handle(request, response, handler);
 
         String viewName = mv.getViewName();// 논리이름 new-from
-
         MyView view = viewResolver(viewName);
 
         view.render(mv.getModel(), request, response);
     }
 
+    private MyHandlerAdapter getHandlerAdapter(Object handler) {
+        for (MyHandlerAdapter adapter : handlerAdapters) {
+            if (adapter.supports(handler)) {
+                return adapter;
+            }
+        }
+        throw new IllegalArgumentException("handler adapter를 찾을 수 없습니다. handler=" + handler);
+    }
+
     private Object getHandler(HttpServletRequest request) {
         String requestURI = request.getRequestURI();
         return handlerMappingMap.get(requestURI);
+    }
+
+    private MyView viewResolver(String viewName) {
+        return new MyView("/WEB-INF/views/" + viewName + ".jsp");
     }
 }
