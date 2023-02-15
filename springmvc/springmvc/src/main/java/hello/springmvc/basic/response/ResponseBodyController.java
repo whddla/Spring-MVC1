@@ -41,7 +41,7 @@ public class ResponseBodyController {
         return new ResponseEntity<>(helloData, HttpStatus.OK);
     }
 
-    
+
 
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
