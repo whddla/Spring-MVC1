@@ -52,3 +52,16 @@ JSP의 경우: InternalResourceViewResolver 가 자동 등록되고, 사용된�
 반환한다.
 JSP의 경우 InternalResourceView(JstlView) 를 반환하는데, 내부에 forward() 로직이 있다.
     8. 뷰 렌더링: 뷰를 통해서 뷰를 렌더링 한다.
+    
+    
+    
+- 타임리프 : `th:xxx`가 붙은 부분은 서버사이드에서 렌더링 되고 , 기존 것을 대체한다. HTML을 파일로 직접 열면 웹브라우저는 `th:xxx`를 읽지 못함 
+               따라서, HTML을 파일 보기를 유지하면서 템플릿 기능도 할 수 있다. 
+    - URL 링크 표현식 : @{...} , th:"@{/css/bootstrap.min.css}"
+    - 리터럴 대체 = |...|, 문자와 표현식은 분리가 되어있어 +를 사용해야 하는데 ```<span th:text="|Welcome to our application, ${user.name}!|">``` 없이 사용가능하다
+
+
+- Redirect 방식 : 상품 등록에서 새로고침 시 상품이 중복 등록되는 것을 볼 수 있었다. 이때 해결 방법은 Redirect 호출 방법이다. ```> "redirect:/basic/items/" + item.getId()```를 사용하여 해결했다 하지만,  URL에 변수를 더해서 사용하는 것은 URL 인코딩이 안되기 때문에 위험하다 그래서 `RedirectAttributes` 를 사용한다.
+
+                
+
